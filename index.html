@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stress Analysis Lab | IIT Kharagpur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --maroon:#7a1f2b; --maroon-dark:#5c1520; --navy:#1f2f4d;
+    --ink:#1e2430; --muted:#5b6474; --line:#dfe3ea;
+    --bg:#ffffff; --soft:#f4f6f9; --gold:#c9a24a;
+    --head:72px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{color-scheme:light;scroll-behavior:smooth;scroll-snap-type:y mandatory;scroll-padding-top:var(--head)}
+  body{font-family:"Inter",Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65;font-size:17px}
+  h1,h2,h3,h4{font-family:"Merriweather",Georgia,serif;color:var(--navy);line-height:1.3}
+  a{color:var(--maroon)}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 28px;width:100%}
+
+  /* ---------- fixed header ---------- */
+  header{position:fixed;top:0;left:0;right:0;height:var(--head);background:#fff;z-index:20;
+         border-bottom:3px solid var(--maroon);box-shadow:0 2px 10px rgba(0,0,0,.05)}
+  header .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand svg{width:46px;height:46px;flex-shrink:0}
+  .brand b{display:block;font-family:"Merriweather",serif;color:var(--maroon);font-size:16px;line-height:1.2}
+  .brand span{display:block;color:var(--muted);font-size:12.5px}
+  nav{display:flex;gap:2px}
+  nav a{color:var(--navy);text-decoration:none;font-weight:600;font-size:14.5px;padding:8px 12px;border-radius:4px}
+  nav a:hover{background:var(--soft)}
+  nav a.active{color:var(--maroon);box-shadow:inset 0 -2px 0 var(--maroon);border-radius:0}
+
+  /* ---------- full-screen sections ---------- */
+  .screen{min-height:100vh;padding:calc(var(--head) + 40px) 0 48px;display:flex;align-items:center;
+          scroll-snap-align:start;border-bottom:1px solid var(--line)}
+  .screen.alt{background:var(--soft)}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--maroon)}
+  .sec-title{font-size:38px;margin-top:6px}
+  .sec-title::after{content:"";display:block;width:64px;height:3px;background:var(--gold);margin-top:14px}
+  .lead{color:var(--muted);margin:18px 0 32px;max-width:780px;font-size:18px}
+
+  /* ---------- hero ---------- */
+  #home{background:#05070c url("banner.jpg") center right/cover no-repeat;position:relative;color:#fff;border:0}
+  #home::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,9,18,.92) 0%,rgba(5,9,18,.7) 45%,rgba(5,9,18,0) 75%)}
+  #home .wrap{position:relative}
+  #home .eyebrow{color:var(--gold)}
+  #home h1{color:#fff;font-size:52px;font-weight:900;max-width:640px;margin:14px 0 18px}
+  #home p{color:#d6dcea;font-size:19px;max-width:560px}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+  .hero-tags span{border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:999px;font-size:14px;color:#fff}
+  .scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);color:#cfd6e4;font-size:13px;text-align:center;letter-spacing:.08em}
+  .scroll-hint i{display:block;width:2px;height:26px;background:#cfd6e4;margin:8px auto 0;animation:drop 1.6s infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  .credit{position:absolute;right:16px;bottom:10px;font-size:11px;color:rgba(255,255,255,.55)}
+
+  /* ---------- about ---------- */
+  .about-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:center}
+  .about-grid p{margin-bottom:16px;font-size:18px;color:#363d4a}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .stat{background:#fff;border:1px solid var(--line);border-top:3px solid var(--maroon);padding:22px;border-radius:4px}
+  .stat b{display:block;font-family:"Merriweather",serif;font-size:34px;color:var(--maroon)}
+  .stat span{color:var(--muted);font-size:15px}
+
+  /* ---------- people ---------- */
+  .people-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .person{display:flex;gap:22px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--maroon);padding:22px;border-radius:4px}
+  .avatar{width:118px;height:138px;flex-shrink:0;border-radius:4px;background:#e8ecf2;overflow:hidden}
+  .avatar svg,.avatar img{width:100%;height:100%;display:block;object-fit:cover}
+  .role{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--maroon);font-weight:700}
+  .person h3{font-size:21px;margin:4px 0 2px}
+  .affil{color:var(--muted);font-size:14px;margin-bottom:12px}
+  .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{background:#f6ecee;color:var(--maroon-dark);border:1px solid #ead5d9;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:600}
+  .contact-line{margin-top:12px;font-size:14px;color:var(--muted)}
+  h3.sub{font-size:20px;margin:34px 0 14px;display:flex;align-items:center;gap:10px}
+  .badge{background:#e7f3ea;color:#24693a;font-family:"Inter",sans-serif;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:.06em}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);font-size:16px}
+  th{background:var(--navy);color:#fff;text-align:left;padding:12px 16px;font-weight:600;font-size:14.5px}
+  td{padding:12px 16px;border-top:1px solid var(--line);vertical-align:middle}
+  td .mini{width:34px;height:34px;border-radius:50%;background:#e8ecf2;display:inline-block;vertical-align:middle;margin-right:10px;overflow:hidden}
+  td .mini svg{width:100%;height:100%}
+
+  /* ---------- research ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:24px;border-top:3px solid var(--navy)}
+  .card .num{font-family:"Merriweather",serif;color:var(--gold);font-weight:700;font-size:14px}
+  .card h4{font-size:18px;margin:6px 0 8px}
+  .card p{color:var(--muted);font-size:15px}
+
+  /* ---------- facilities ---------- */
+  .fac-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .fac{background:#fff;border:1px solid var(--line);border-radius:4px;padding:24px;display:flex;gap:18px;align-items:flex-start}
+  .ico{width:60px;height:60px;flex-shrink:0;border-radius:50%;background:#f6ecee;display:grid;place-items:center}
+  .ico svg{width:32px;height:32px;stroke:var(--maroon);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .fac h4{font-size:18px;margin-bottom:6px}
+  .fac p{color:var(--muted);font-size:15px}
+
+  /* ---------- contact ---------- */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .contact-box{background:#fff;border:1px solid var(--line);padding:26px;border-radius:4px;border-top:3px solid var(--maroon)}
+  .contact-box h4{font-size:18px;margin-bottom:10px}
+  .contact-box p{margin-bottom:6px;color:#363d4a}
+  footer{background:var(--navy);color:#cdd5e4;font-size:14px;scroll-snap-align:end}
+  footer .wrap{padding:20px 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  /* ---------- side dots ---------- */
+  .dots{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:15;display:flex;flex-direction:column;gap:12px}
+  .dots a{width:11px;height:11px;border-radius:50%;border:2px solid var(--maroon);background:#fff;display:block;position:relative}
+  .dots a.active{background:var(--maroon)}
+  .dots a span{position:absolute;right:20px;top:50%;transform:translateY(-50%);background:var(--navy);color:#fff;font-size:12px;
+               padding:3px 8px;border-radius:3px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}
+  .dots a:hover span{opacity:1}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:980px){
+    nav{display:none}
+    .grid,.fac-grid{grid-template-columns:1fr 1fr}
+    .people-grid,.about-grid,.contact-grid{grid-template-columns:1fr}
+  }
+  @media (max-width:640px){
+    html{scroll-snap-type:y proximity}
+    .grid,.fac-grid{grid-template-columns:1fr}
+    #home h1{font-size:36px}
+    .sec-title{font-size:30px}
+    .person{flex-direction:column}
+    .dots{display:none}
+    #home::before{background:linear-gradient(180deg,rgba(5,9,18,.85),rgba(5,9,18,.6))}
+  }
+  @media (max-height:760px){ html{scroll-snap-type:y proximity} }
+</style>
+</head>
+<body>
+
+<!-- Reusable person placeholder icon -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="person" viewBox="0 0 118 138">
+    <rect width="118" height="138" fill="#e8ecf2"/>
+    <circle cx="59" cy="52" r="24" fill="#b7c0ce"/>
+    <path d="M14 138c4-30 22-46 45-46s41 16 45 46z" fill="#b7c0ce"/>
+  </symbol>
+</svg>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#home">
+      <!-- Lab emblem (replace with a real logo if you have one) -->
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="#7a1f2b"/>
+        <circle cx="32" cy="32" r="25.5" fill="none" stroke="#c9a24a" stroke-width="1.5"/>
+        <g fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round">
+          <path d="M32 15l3 4.5 5.2-1.6.6 5.4 5.2 1.6-2.4 4.9 3.8 3.8-4.6 2.9 1.4 5.3-5.4.3-1.6 5.2L32 44.6l-4.2 3.4-1.6-5.2-5.4-.3 1.4-5.3-4.6-2.9 3.8-3.8-2.4-4.9 5.2-1.6.6-5.4 5.2 1.6z"/>
+        </g>
+        <path d="M22 33l7-1 3 3 4-5 6 1" fill="none" stroke="#c9a24a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <b>Stress Analysis Lab</b>
+        <span>Dept. of Mechanical Engineering · IIT Kharagpur</span>
+      </div>
+    </a>
+    <nav id="nav">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#people">People</a>
+      <a href="#research">Research</a>
+      <a href="#facilities">Facilities</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<div class="dots" id="dots">
+  <a href="#home"><span>Home</span></a>
+  <a href="#about"><span>About</span></a>
+  <a href="#people"><span>People</span></a>
+  <a href="#research"><span>Research</span></a>
+  <a href="#facilities"><span>Facilities</span></a>
+  <a href="#contact"><span>Contact</span></a>
+</div>
+
+<!-- ============ HOME ============ -->
+<section class="screen" id="home">
+  <div class="wrap">
+    <div class="eyebrow">Indian Institute of Technology Kharagpur</div>
+    <h1>Stress Analysis Laboratory</h1>
+    <p>Understanding how engineering materials deform, crack and fail, through experiment, analysis and design.</p>
+    <div class="hero-tags">
+      <span>Machine Design</span><span>Fracture Mechanics</span><span>Tribology</span><span>Photoelasticity</span><span>DIC</span>
+    </div>
+  </div>
+  <div class="scroll-hint">SCROLL<i></i></div>
+  <div class="credit">Illustration: photoelastic fringes at a crack tip</div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="screen alt" id="about">
+  <div class="wrap">
+    <div class="eyebrow">Who we are</div>
+    <h2 class="sec-title">About the Lab</h2>
+    <div class="about-grid" style="margin-top:32px">
+      <div>
+        <p>The laboratory carries out experimental and analytical research on the mechanical behaviour of engineering materials and components.</p>
+        <p>Its work covers crack initiation and growth, fatigue and creep, contact and wear, and full-field stress and strain measurement using photoelasticity and digital image correlation.</p>
+        <p>The group combines classical experimental mechanics with modern tools such as 3D-printed specimens and image-based measurement.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>5</b><span>Experimental facilities</span></div>
+        <div class="stat"><b>6</b><span>Research areas</span></div>
+        <div class="stat"><b>1</b><span>Post-doctoral fellow</span></div>
+        <div class="stat"><b>2</b><span>M.Tech scholars</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PEOPLE ============ -->
+<section class="screen" id="people">
+  <div class="wrap">
+    <div class="eyebrow">Our team</div>
+    <h2 class="sec-title">People</h2>
+    <div class="people-grid" style="margin-top:32px">
+      <div class="person">
+        <!-- To add a photo: replace the <svg> below with <img src="sarangi.jpg" alt="Prof. Mihir Sarangi"> -->
+        <div class="avatar"><svg><use href="#person"/></svg></div>
+        <div>
+          <div class="role">Professor-in-Charge</div>
+          <h3>Prof. Mihir Sarangi</h3>
+          <div class="affil">Dept. of Mechanical Engineering</div>
+          <div class="tags">
+            <span class="tag">Machine Design</span>
+            <span class="tag">Fracture Mechanics</span>
+            <span class="tag">Tribology</span>
+          </div>
+          <div class="contact-line">Email: <em>add email</em></div>
+        </div>
+      </div>
+      <div class="person">
+        <!-- To add a photo: replace the <svg> below with <img src="ramit.jpg" alt="Dr. Ramit Chugh"> -->
+        <div class="avatar"><svg><use href="#person"/></svg></div>
+        <div>
+          <div class="role">Post-Doctoral Fellow</div>
+          <h3>Dr. Ramit Chugh</h3>
+          <div class="affil">Dept. of Mechanical Engineering</div>
+          <div class="tags">
+            <span class="tag">Stress Analysis</span>
+            <span class="tag">Photoelasticity</span>
+            <span class="tag">Digital Image Correlation</span>
+            <span class="tag">Fracture Mechanics</span>
+          </div>
+          <div class="contact-line">Email: <em>add email</em></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">M.Tech Scholars <span class="badge">PRESENT</span></h3>
+    <table>
+      <thead><tr><th style="width:36%">Name</th><th>Thesis Topic</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mini"><svg viewBox="0 0 118 138"><use href="#person"/></svg></span><strong>Aman Srivastav</strong></td><td>Effect of crack inclination in non-ideal cracks</td></tr>
+        <tr><td><span class="mini"><svg viewBox="0 0 118 138"><use href="#person"/></svg></span><strong>Rajit Patel</strong></td><td>Effect of perforation on fatigue crack growth in aluminium alloys</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ RESEARCH ============ -->
+<section class="screen alt" id="research">
+  <div class="wrap">
+    <div class="eyebrow">What we work on</div>
+    <h2 class="sec-title">Research Areas</h2>
+    <div class="grid" style="margin-top:32px">
+      <div class="card"><div class="num">01</div><h4>Fracture Mechanics</h4><p>Crack behaviour, stress intensity factors and fracture in ideal and non-ideal cracks.</p></div>
+      <div class="card"><div class="num">02</div><h4>Fatigue &amp; Crack Growth</h4><p>Fatigue crack propagation in metallic alloys, including the effect of perforations.</p></div>
+      <div class="card"><div class="num">03</div><h4>Machine Design</h4><p>Design and reliability of mechanical components under service loads.</p></div>
+      <div class="card"><div class="num">04</div><h4>Tribology</h4><p>Friction, wear and lubrication at contacting surfaces.</p></div>
+      <div class="card"><div class="num">05</div><h4>Experimental Stress Analysis</h4><p>Measuring stress and strain fields in loaded components and models.</p></div>
+      <div class="card"><div class="num">06</div><h4>Photoelasticity &amp; DIC</h4><p>Full-field optical methods: photoelastic fringe analysis and digital image correlation.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FACILITIES ============ -->
+<section class="screen" id="facilities">
+  <div class="wrap">
+    <div class="eyebrow">Equipment</div>
+    <h2 class="sec-title">Facilities</h2>
+    <div class="fac-grid" style="margin-top:32px">
+      <div class="fac">
+        <div class="ico"><svg viewBox="0 0 32 32"><circle cx="7" cy="16" r="4"/><path d="M11 16h3"/><rect x="14" y="10" width="4" height="12" rx="1"/><path d="M18 16h3"/><rect x="21" y="9" width="7" height="14" rx="1"/><path d="M23 13l3 6M26 13l-3 6"/></svg></div>
+        <div><h4>Photoelasticity</h4><p>Polariscope setup for visualising and measuring stress fields in transparent models.</p></div>
+      </div>
+      <div class="fac">
+        <div class="ico"><svg viewBox="0 0 32 32"><path d="M6 4h20M6 28h20M9 4v24M23 4v24"/><rect x="13" y="11" width="6" height="10" rx="1"/><path d="M16 4v7M16 21v7"/><path d="M27 9a3 3 0 010 6"/></svg></div>
+        <div><h4>Creep Testing</h4><p>Long-duration testing of material deformation under sustained load and temperature.</p></div>
+      </div>
+      <div class="fac">
+        <div class="ico"><svg viewBox="0 0 32 32"><rect x="3" y="9" width="18" height="14" rx="2"/><path d="M21 13l7-3v12l-7-3"/><circle cx="12" cy="16" r="4"/><path d="M6 6h4"/></svg></div>
+        <div><h4>Digital Image Correlation</h4><p>Camera-based, non-contact measurement of full-field displacement and strain.</p></div>
+      </div>
+      <div class="fac">
+        <div class="ico"><svg viewBox="0 0 32 32"><rect x="4" y="4" width="24" height="24" rx="2"/><path d="M4 9h24"/><path d="M14 9v5l2 2 2-2V9"/><path d="M10 24h12l-2-5h-8z"/></svg></div>
+        <div><h4>3D Printing</h4><p>Additive manufacturing of specimens, fixtures and photoelastic models.</p></div>
+      </div>
+      <div class="fac">
+        <div class="ico"><svg viewBox="0 0 32 32"><path d="M3 16c2.5-6 5-6 7.5 0s5 6 7.5 0 5-6 7.5 0 2.5 3 3.5 3"/><path d="M5 27h22M5 5h22"/></svg></div>
+        <div><h4>Fatigue Testing</h4><p>Cyclic loading of specimens for fatigue life and crack growth studies.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="screen alt" id="contact">
+  <div class="wrap">
+    <div class="eyebrow">Get in touch</div>
+    <h2 class="sec-title">Contact</h2>
+    <div class="contact-grid" style="margin-top:32px">
+      <div class="contact-box">
+        <h4>Address</h4>
+        <p>Stress Analysis Laboratory</p>
+        <p>Department of Mechanical Engineering</p>
+        <p>Indian Institute of Technology Kharagpur</p>
+        <p>Kharagpur, West Bengal 721302, India</p>
+      </div>
+      <div class="contact-box">
+        <h4>Prof. Mihir Sarangi</h4>
+        <p>Professor-in-Charge</p>
+        <p>Email: <em>add email</em></p>
+        <p>Phone: <em>add phone</em></p>
+        <p style="margin-top:12px;color:var(--muted)">Students interested in joining the group are welcome to get in touch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Stress Analysis Laboratory, IIT Kharagpur</span>
+    <span>Last updated: November 2026</span>
+  </div>
+</footer>
+
+<script>
+  // Highlight the current section in the menu and side dots
+  const ids=["home","about","people","research","facilities","contact"];
+  const links=[...document.querySelectorAll('#nav a, #dots a')];
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
+      }
+    });
+  },{threshold:0.5});
+  ids.forEach(id=>obs.observe(document.getElementById(id)));
+</script>
+</body>
+</html>
